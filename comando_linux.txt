@@ -13,3 +13,24 @@ $ df -h     # ¿cuánto disco tengo?
 $ free -h   # ¿cuánta memoria RAM?
 
 $ nproc     # ¿cuántos procesadores?
+
+sudo yum install git (instalar programas)
+ifconfig ver la ip
+
+
+mkdir
+cd 
+echo
+mkdir -p AndraG/{web,datos,logs} varias carpeta
+cd AndraG && ls -R ramal
+
+echo "Bienvenidos a mi web" > web/index.html
+cat web/index.html
+ls -lh web
+
+ping gogle.com -c5 (llega)
+curl -4 ifconfig.me (sacar ip publica)
+nslookup google.com (el dns en accion :nombre -ip)
+tracepath Google.com (el camino ,salto por salto)
+ss -tuln (que puerto tengo abierto) 
+
