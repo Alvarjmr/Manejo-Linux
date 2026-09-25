@@ -49,3 +49,6 @@ $ sudo yum install -y nginx
 $ sudo systemctl enable --now nginx
 
 # abre http://TU-ELASTIC-IP → ves la página por defecto de NGINX
+ cd /usr/share/nginx/html/
+sudo cp Manejo-Linux/index.html .
+
