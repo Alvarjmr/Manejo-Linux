@@ -50,5 +50,5 @@ $ sudo systemctl enable --now nginx
 
 # abre http://TU-ELASTIC-IP → ves la página por defecto de NGINX
  cd /usr/share/nginx/html/
-sudo cp Manejo-Linux/index.html .
+sudo cp Manejo-Linux/index.html /usr/share/nginx/html/
 
