@@ -1,0 +1,51 @@
+ec2-user
+
+$ whoami     # ¿quién soy aquí? → ec2-user
+
+$ hostname   # ¿cómo se llama este servidor?
+
+$ pwd       # ¿en qué carpeta estoy?
+
+$ uname -a   # ¿qué sistema es? (Linux 👀)
+
+$ uptime    # ¿hace cuánto está encendido?
+
+$ df -h     # ¿cuánto disco tengo?
+
+$ free -h   # ¿cuánta memoria RAM?
+
+$ nproc     # ¿cuántos procesadores?
+
+sudo yum install git (instalar programas)
+ifconfig ver la ip
+
+
+mkdir
+cd 
+echo
+mkdir -p AndraG/{web,datos,logs} varias carpeta
+cd AndraG && ls -R ramal
+
+c
+cat web/index.html
+ls -lh web
+
+ping gogle.com -c5 (llega)
+curl -4 ifconfig.me (sacar ip publica)
+nslookup google.com (el dns en accion :nombre -ip)
+tracepath Google.com (el camino ,salto por salto)
+ss -tuln (que puerto tengo abierto) 
+
+sudo systemctl enable --now nginx
+
+# conéctate con MobaXterm → Session → SSH
+
+# host: TU-ELASTIC-IP · user: ec2-user · Use private key: .ppk
+
+# ya dentro del servidor:
+
+$ sudo yum install -y nginx
+
+$ sudo systemctl enable --now nginx
+
+# abre http://TU-ELASTIC-IP → ves la página por defecto de NGINX

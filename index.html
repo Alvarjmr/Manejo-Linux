@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Atelier Nube, personaliza prendas femeninas a tu estilo.">
+  <title>Atelier Nube | Diseña tu prenda</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap');
+
+    :root {
+      --ink: #27302b;
+      --muted: #6f7770;
+      --cream: #f6f1e9;
+      --paper: #fffdf9;
+      --sage: #819786;
+      --sage-dark: #50685b;
+      --coral: #e47f6f;
+      --line: #e8e1d7;
+      --shadow: 0 18px 50px rgba(46, 56, 47, .10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+    }
+    button, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 22px 28px;
+    }
+    .brand {
+      color: var(--ink);
+      text-decoration: none;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      letter-spacing: .02em;
+    }
+    .brand span { color: var(--coral); }
+    .header-actions { display: flex; align-items: center; gap: 22px; }
+    .nav-link { color: var(--muted); text-decoration: none; font-size: .9rem; }
+    .bag {
+      display: flex; align-items: center; gap: 8px;
+      border: 0; background: transparent; color: var(--ink); font-weight: 700;
+    }
+    .bag-count {
+      display: grid; place-items: center; width: 22px; height: 22px;
+      border-radius: 50%; background: var(--coral); color: white; font-size: .72rem;
+    }
+
+    main { max-width: 1240px; margin: 0 auto; padding: 12px 28px 52px; }
+    .eyebrow {
+      margin: 28px 0 10px; color: var(--coral); font-size: .75rem; font-weight: 700;
+      letter-spacing: .15em; text-transform: uppercase;
+    }
+    h1, h2, p { margin-top: 0; }
+    h1 { max-width: 650px; margin-bottom: 12px; font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5vw, 4.7rem); line-height: .98; font-weight: 600; }
+    .intro { max-width: 530px; color: var(--muted); line-height: 1.7; }
+
+    .workbench {
+      display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(330px, .75fr); gap: 28px;
+      margin-top: 38px;
+    }
+    .preview {
+      position: relative; min-height: 620px; overflow: hidden; border-radius: 8px; background: #d7dfd2;
+      box-shadow: var(--shadow); isolation: isolate;
+    }
+    .preview::before, .preview::after { content: ''; position: absolute; border-radius: 50%; z-index: -1; }
+    .preview::before { width: 440px; height: 440px; right: -90px; top: -100px; background: #c0d1c3; }
+    .preview::after { width: 300px; height: 300px; left: -100px; bottom: -110px; background: #e6c8ae; }
+    .preview-top { position: absolute; top: 24px; left: 26px; right: 26px; display: flex; justify-content: space-between; align-items: center; color: #4f6256; font-size: .8rem; }
+    .preview-tag { padding: 7px 10px; border: 1px solid rgba(79,98,86,.25); border-radius: 99px; }
+    .model { position: absolute; inset: 12% 20% 0; display: flex; justify-content: center; align-items: flex-end; }
+    .head { position: absolute; top: 5%; width: 84px; height: 108px; border-radius: 45% 45% 48% 48%; background: #b98264; }
+    .hair { position: absolute; top: 1%; width: 115px; height: 150px; border-radius: 48% 48% 38% 38%; background: #403936; transform: rotate(-4deg); }
+    .neck { position: absolute; top: 23%; width: 39px; height: 75px; background: #b98264; }
+    .body { position: absolute; bottom: 0; width: 290px; height: 370px; background: var(--garment, #f3c5b8); clip-path: polygon(21% 0, 39% 8%, 50% 12%, 61% 8%, 79% 0, 100% 25%, 84% 32%, 79% 22%, 84% 100%, 16% 100%, 21% 22%, 16% 32%, 0 25%); transition: background .35s ease; }
+    .body::before { content: ''; position: absolute; left: 37%; top: 0; width: 26%; height: 17%; background: rgba(255,255,255,.38); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+    .body::after { content: 'AN'; position: absolute; right: 25%; top: 43%; color: rgba(67,61,53,.3); font-size: .85rem; font-weight: 700; letter-spacing: .08em; }
+    .sleeve { position: absolute; width: 100px; height: 145px; background: var(--garment, #f3c5b8); transition: background .35s ease; }
+    .sleeve-left { left: 8%; top: 28%; transform: rotate(16deg); clip-path: polygon(38% 0, 100% 12%, 69% 100%, 0 87%); }
+    .sleeve-right { right: 8%; top: 28%; transform: rotate(-16deg); clip-path: polygon(0 12%, 62% 0, 100% 87%, 31% 100%); }
+    .caption { position: absolute; left: 26px; bottom: 24px; color: #4f6256; font-size: .85rem; }
+
+    .controls { padding: 30px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); box-shadow: var(--shadow); }
+    .controls h2 { margin-bottom: 7px; font-family: 'Playfair Display', serif; font-size: 1.75rem; }
+    .controls > p { margin-bottom: 26px; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+    .control-group { padding: 19px 0; border-top: 1px solid var(--line); }
+    .control-label { display: flex; justify-content: space-between; margin-bottom: 13px; font-size: .86rem; font-weight: 700; }
+    .control-value { color: var(--muted); font-weight: 500; }
+    .swatches { display: flex; gap: 12px; }
+    .swatch { width: 31px; height: 31px; border: 3px solid var(--paper); border-radius: 50%; outline: 1px solid transparent; box-shadow: 0 2px 5px rgba(0,0,0,.12); }
+    .swatch.active { outline-color: var(--ink); }
+    select { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: white; }
+    .sizes { display: flex; gap: 8px; }
+    .size { min-width: 40px; padding: 9px 6px; border: 1px solid var(--line); border-radius: 3px; color: var(--muted); background: white; }
+    .size.active, .size:hover { border-color: var(--sage-dark); background: var(--sage-dark); color: white; }
+    .summary { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; }
+    .price { font-size: 1.35rem; font-weight: 700; }
+    .add-button { width: 100%; margin-top: 19px; padding: 15px; border: 0; border-radius: 4px; background: var(--coral); color: white; font-weight: 700; transition: background .2s, transform .2s; }
+    .add-button:hover { background: #c9675a; transform: translateY(-2px); }
+    .feedback { min-height: 20px; margin: 12px 0 0; color: var(--sage-dark); font-size: .82rem; text-align: center; }
+
+    .details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 28px; padding: 28px 0; border-top: 1px solid var(--line); }
+    .detail { display: flex; gap: 14px; align-items: flex-start; }
+    .detail-icon { color: var(--coral); font-size: 1.45rem; }
+    .detail strong { display: block; margin-bottom: 5px; font-size: .9rem; }
+    .detail span { color: var(--muted); font-size: .8rem; line-height: 1.4; }
+    footer { padding: 24px 28px 40px; color: var(--muted); text-align: center; font-size: .8rem; }
+
+    @media (max-width: 800px) {
+      .site-header, main { padding-left: 18px; padding-right: 18px; }
+      .nav-link { display: none; }
+      .workbench { grid-template-columns: 1fr; }
+      .preview { min-height: 510px; }
+      .details { grid-template-columns: 1fr; gap: 18px; }
+    }
+    @media (max-width: 430px) {
+      h1 { font-size: 2.65rem; }
+      .controls { padding: 22px; }
+      .preview { min-height: 450px; }
+      .model { inset: 14% 10% 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#inicio">atelier <span>nube</span></a>
+    <div class="header-actions">
+      <a class="nav-link" href="#personaliza">Personaliza</a>
+      <button class="bag" type="button" aria-label="Ver bolsa de compra">Bolsa <span class="bag-count" id="bagCount">0</span></button>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <p class="eyebrow">Tu estilo, hecho a mano</p>
+    <h1>La prenda que imaginaste, ahora existe.</h1>
+    <p class="intro">Crea una pieza única eligiendo el color, el corte y el ajuste. Diseñada en nuestro atelier y confeccionada con materiales conscientes.</p>
+
+    <section class="workbench" id="personaliza" aria-label="Personalizador de prenda">
+      <div class="preview" aria-label="Vista previa de la prenda seleccionada">
+        <div class="preview-top"><span>Vista previa</span><span class="preview-tag">Edición limitada</span></div>
+        <div class="model" aria-hidden="true">
+          <div class="hair"></div><div class="head"></div><div class="neck"></div>
+          <div class="sleeve sleeve-left"></div><div class="sleeve sleeve-right"></div><div class="body"></div>
+        </div>
+        <span class="caption">Tu diseño · 01</span>
+      </div>
+
+      <form class="controls" id="customizer">
+        <h2>Diseña tu pieza</h2>
+        <p>Pequeñas decisiones, una prenda completamente tuya.</p>
+
+        <div class="control-group">
+          <div class="control-label"><span>Color</span><span class="control-value" id="colorName">Rosa pétalo</span></div>
+          <div class="swatches" role="group" aria-label="Selecciona un color">
+            <button class="swatch active" type="button" data-color="#f3c5b8" data-name="Rosa pétalo" style="background:#f3c5b8" aria-label="Rosa pétalo"></button>
+            <button class="swatch" type="button" data-color="#819786" data-name="Verde salvia" style="background:#819786" aria-label="Verde salvia"></button>
+            <button class="swatch" type="button" data-color="#d6b27a" data-name="Arena dorada" style="background:#d6b27a" aria-label="Arena dorada"></button>
+            <button class="swatch" type="button" data-color="#4b5665" data-name="Azul noche" style="background:#4b5665" aria-label="Azul noche"></button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="style"><span>Tipo de prenda</span></label>
+          <select id="style" name="style">
+            <option>Blusa esencial</option>
+            <option>Top cruzado</option>
+            <option>Camisa oversized</option>
+            <option>Vestido midi</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label"><span>Talla</span><span class="control-value" id="sizeName">M</span></div>
+          <div class="sizes" role="group" aria-label="Selecciona una talla">
+            <button class="size" type="button">XS</button><button class="size" type="button">S</button><button class="size active" type="button">M</button><button class="size" type="button">L</button><button class="size" type="button">XL</button>
+          </div>
+        </div>
+
+        <div class="summary"><span>Precio estimado</span><span class="price" id="price">89,00 €</span></div>
+        <button class="add-button" type="submit">Añadir a mi bolsa <span aria-hidden="true">→</span></button>
+        <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="details" aria-label="Ventajas del servicio">
+      <div class="detail"><span class="detail-icon">✦</span><div><strong>Hecho para ti</strong><span>Cada pieza se prepara bajo pedido en nuestro atelier.</span></div></div>
+      <div class="detail"><span class="detail-icon">◌</span><div><strong>Materiales honestos</strong><span>Tejidos seleccionados para durar y sentirse bien.</span></div></div>
+      <div class="detail"><span class="detail-icon">↺</span><div><strong>Cambios sencillos</strong><span>Tienes 30 días para encontrar tu ajuste perfecto.</span></div></div>
+    </section>
+  </main>
+
+  <footer>Atelier Nube · Prendas con intención · 2026</footer>
+
+  <script>
+    const garmentParts = document.querySelectorAll('.body, .sleeve');
+    const colorName = document.querySelector('#colorName');
+    const sizeName = document.querySelector('#sizeName');
+    const bagCount = document.querySelector('#bagCount');
+    const feedback = document.querySelector('#feedback');
+    const price = document.querySelector('#price');
+    const styleSelect = document.querySelector('#style');
+    let itemsInBag = 0;
+
+    document.querySelectorAll('.swatch').forEach((swatch) => {
+      swatch.addEventListener('click', () => {
+        document.querySelectorAll('.swatch').forEach((item) => item.classList.remove('active'));
+        swatch.classList.add('active');
+        garmentParts.forEach((part) => part.style.setProperty('--garment', swatch.dataset.color));
+        colorName.textContent = swatch.dataset.name;
+      });
+    });
+
+    document.querySelectorAll('.size').forEach((size) => {
+      size.addEventListener('click', () => {
+        document.querySelectorAll('.size').forEach((item) => item.classList.remove('active'));
+        size.classList.add('active');
+        sizeName.textContent = size.textContent;
+      });
+    });
+
+    styleSelect.addEventListener('change', () => {
+      price.textContent = styleSelect.value === 'Vestido midi' ? '129,00 €' : styleSelect.value === 'Camisa oversized' ? '99,00 €' : '89,00 €';
+    });
+
+    document.querySelector('#customizer').addEventListener('submit', (event) => {
+      event.preventDefault();
+      itemsInBag += 1;
+      bagCount.textContent = itemsInBag;
+      feedback.textContent = 'Diseño guardado en tu bolsa.';
+    });
+  </script>
+</body>
+</html>
