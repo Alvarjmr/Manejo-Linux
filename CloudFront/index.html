@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102a43">
+  <title>Parqueadero | Control de vehículos</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #102a43;
+      --navy-light: #243f58;
+      --teal: #0c8b78;
+      --teal-dark: #087565;
+      --ink: #183247;
+      --muted: #6d7f8e;
+      --line: #e4ebef;
+      --canvas: #f4f7f8;
+      --white: #fff;
+      --danger: #bd3c43;
+      --shadow: 0 12px 32px rgba(16, 42, 67, .06);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .topbar {
+      background: var(--navy);
+      color: var(--white);
+      padding: 0 28px;
+    }
+    .topbar-inner {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      margin: 0 auto;
+      max-width: 1240px;
+      min-height: 76px;
+    }
+    .brand { align-items: center; display: flex; gap: 12px; }
+    .brand-mark {
+      align-items: center;
+      background: rgba(255,255,255,.11);
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 12px;
+      display: flex;
+      font-size: 22px;
+      height: 42px;
+      justify-content: center;
+      width: 42px;
+    }
+    .brand-name { font-size: 16px; font-weight: 700; letter-spacing: .01em; }
+    .brand-caption { color: #b7c7d4; font-size: 12px; margin-top: 3px; }
+    .header-date { color: #d0dce5; font-size: 13px; }
+    main { margin: 0 auto; max-width: 1240px; padding: 34px 28px 56px; }
+    .page-heading {
+      align-items: flex-end;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+    h1 { color: var(--navy); font-size: 28px; letter-spacing: -.035em; margin: 0; }
+    .subtitle { color: var(--muted); margin: 7px 0 0; }
+    .status-pill {
+      align-items: center;
+      background: #e4f5f1;
+      border-radius: 999px;
+      color: #087565;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 650;
+      gap: 8px;
+      padding: 9px 13px;
+    }
+    .status-dot { background: #13a287; border-radius: 50%; height: 7px; width: 7px; }
+    .stats {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      margin-bottom: 22px;
+    }
+    .stat-card, .panel {
+      background: var(--white);
+      border: 1px solid #e9eef1;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+    .stat-card { align-items: center; display: flex; gap: 14px; padding: 17px 19px; }
+    .stat-icon {
+      align-items: center;
+      background: #edf5f6;
+      border-radius: 11px;
+      color: var(--teal);
+      display: flex;
+      font-size: 19px;
+      height: 42px;
+      justify-content: center;
+      width: 42px;
+    }
+    .stat-label { color: var(--muted); font-size: 12px; }
+    .stat-value { color: var(--navy); font-size: 23px; font-weight: 750; margin-top: 2px; }
+    .workspace { display: grid; gap: 20px; grid-template-columns: 340px minmax(0, 1fr); }
+    .panel { overflow: hidden; }
+    .panel-heading {
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      min-height: 65px;
+      padding: 16px 20px;
+    }
+    .panel-title { color: var(--navy); font-size: 15px; font-weight: 700; margin: 0; }
+    .panel-hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .form-body { padding: 20px; }
+    .field { margin-bottom: 17px; }
+    label { color: #40566a; display: block; font-size: 12px; font-weight: 650; margin-bottom: 7px; }
+    input, select {
+      background: #fff;
+      border: 1px solid #dce5e9;
+      border-radius: 8px;
+      color: var(--ink);
+      height: 42px;
+      outline: none;
+      padding: 0 12px;
+      transition: border-color .15s, box-shadow .15s;
+      width: 100%;
+    }
+    input:focus, select:focus { border-color: #35a796; box-shadow: 0 0 0 3px rgba(12,139,120,.11); }
+    input::placeholder { color: #a0adb7; }
+    .field-note { color: #8795a0; font-size: 11px; margin: 6px 0 0; }
+    .primary-button {
+      background: var(--teal);
+      border: 0;
+      border-radius: 8px;
+      color: white;
+      font-weight: 700;
+      min-height: 43px;
+      padding: 0 15px;
+      transition: background .15s, transform .15s;
+      width: 100%;
+    }
+    .primary-button:hover { background: var(--teal-dark); }
+    .primary-button:active { transform: translateY(1px); }
+    .occupancy { background: #f5f8f9; border-radius: 9px; margin-top: 19px; padding: 13px; }
+    .occupancy-top { align-items: center; color: #52687a; display: flex; font-size: 12px; justify-content: space-between; }
+    .occupancy-top strong { color: var(--navy); }
+    .progress-track { background: #e1e9ec; border-radius: 99px; height: 6px; margin-top: 10px; overflow: hidden; }
+    .progress-fill { background: var(--teal); border-radius: inherit; height: 100%; transition: width .2s; width: 0; }
+    .table-tools { align-items: center; display: flex; gap: 10px; }
+    .search { height: 36px; max-width: 210px; }
+    .count-badge { background: #eef3f5; border-radius: 999px; color: #536a7c; font-size: 11px; font-weight: 700; padding: 6px 9px; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; min-width: 600px; text-align: left; width: 100%; }
+    th {
+      background: #f8fafb;
+      color: #82909a;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      padding: 12px 16px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    td { border-top: 1px solid #edf1f3; color: #435b6d; padding: 14px 16px; white-space: nowrap; }
+    .plate {
+      background: #f4f7f8;
+      border: 1px solid #e0e8ec;
+      border-radius: 5px;
+      color: var(--navy);
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .07em;
+      padding: 5px 8px;
+    }
+    .vehicle-type { color: #71818d; font-size: 12px; }
+    .exit-button {
+      background: #fff;
+      border: 1px solid #cce9e3;
+      border-radius: 7px;
+      color: #087565;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .exit-button:hover { background: #eff9f6; }
+    .history-panel { margin-top: 20px; }
+    .history-title { align-items: center; display: flex; gap: 9px; }
+    .history-icon { color: #768996; font-size: 16px; }
+    .empty-state { color: #8795a0; padding: 35px 16px; text-align: center; }
+    .empty-icon { display: block; font-size: 24px; margin-bottom: 8px; }
+    .toast {
+      background: var(--navy);
+      border-radius: 9px;
+      bottom: 22px;
+      box-shadow: 0 10px 30px rgba(16,42,67,.2);
+      color: white;
+      max-width: calc(100% - 32px);
+      opacity: 0;
+      padding: 12px 16px;
+      pointer-events: none;
+      position: fixed;
+      right: 24px;
+      transform: translateY(8px);
+      transition: opacity .2s, transform .2s;
+      z-index: 2;
+    }
+    .toast.visible { opacity: 1; transform: translateY(0); }
+    .toast.error { background: #9e3039; }
+    @media (max-width: 850px) {
+      .workspace { grid-template-columns: 290px minmax(0, 1fr); }
+      main { padding-left: 20px; padding-right: 20px; }
+      .topbar { padding: 0 20px; }
+    }
+    @media (max-width: 680px) {
+      .workspace { grid-template-columns: 1fr; }
+      .stats { gap: 10px; grid-template-columns: 1fr; }
+      .stat-card { padding: 12px 15px; }
+      .stat-icon { height: 38px; width: 38px; }
+      .stat-value { font-size: 20px; }
+      .page-heading { align-items: flex-start; flex-direction: column; gap: 14px; }
+      h1 { font-size: 25px; }
+      .header-date { display: none; }
+      main { padding-top: 26px; }
+      .panel-heading { padding-left: 16px; padding-right: 16px; }
+      .search { max-width: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">P</div>
+        <div>
+          <div class="brand-name">Parqueadero</div>
+          <div class="brand-caption">Panel de control</div>
+        </div>
+      </div>
+      <div class="header-date" id="current-date"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-heading" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">Control de vehículos</h1>
+        <p class="subtitle">Registra entradas y salidas de forma sencilla.</p>
+      </div>
+      <div class="status-pill"><span class="status-dot"></span> Parqueadero en operación</div>
+    </section>
+
+    <section class="stats" aria-label="Resumen del parqueadero">
+      <article class="stat-card">
+        <div class="stat-icon" aria-hidden="true">▣</div>
+        <div><div class="stat-label">Vehículos dentro</div><div class="stat-value" id="active-total">0</div></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-icon" aria-hidden="true">↗</div>
+        <div><div class="stat-label">Entradas de hoy</div><div class="stat-value" id="entries-today">0</div></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-icon" aria-hidden="true">↙</div>
+        <div><div class="stat-label">Salidas de hoy</div><div class="stat-value" id="exits-today">0</div></div>
+      </article>
+    </section>
+
+    <section class="workspace" aria-label="Registro y vehículos actuales">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2 class="panel-title">Registrar entrada</h2>
+            <div class="panel-hint">Ingresa los datos del vehículo</div>
+          </div>
+        </div>
+        <form class="form-body" id="entry-form">
+          <div class="field">
+            <label for="plate-input">Placa del vehículo</label>
+            <input id="plate-input" name="plate" autocomplete="off" maxlength="12" placeholder="Ej. ABC-123" required>
+            <p class="field-note">La placa se guarda en mayúsculas.</p>
+          </div>
+          <div class="field">
+            <label for="type-input">Tipo de vehículo</label>
+            <select id="type-input" name="type">
+              <option value="Automóvil">Automóvil</option>
+              <option value="Motocicleta">Motocicleta</option>
+              <option value="Camioneta">Camioneta</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <button class="primary-button" type="submit">＋ &nbsp; Registrar entrada</button>
+          <div class="occupancy">
+            <div class="occupancy-top"><span>Ocupación actual</span><strong id="occupancy-label">0 vehículos</strong></div>
+            <div class="progress-track" role="progressbar" aria-label="Ocupación del parqueadero" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+          </div>
+        </form>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2 class="panel-title">Vehículos en el parqueadero</h2>
+            <div class="panel-hint">Registra la salida al retirar un vehículo</div>
+          </div>
+          <div class="table-tools">
+            <span class="count-badge" id="active-badge">0 activos</span>
+            <input class="search" id="active-search" type="search" aria-label="Buscar vehículo activo" placeholder="Buscar placa">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Placa</th><th>Tipo</th><th>Hora de entrada</th><th>Acción</th></tr></thead>
+            <tbody id="active-rows"></tbody>
+          </table>
+          <div class="empty-state" id="active-empty"><span class="empty-icon" aria-hidden="true">⌕</span>No hay vehículos en el parqueadero.</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel history-panel">
+      <div class="panel-heading">
+        <div class="history-title">
+          <span class="history-icon" aria-hidden="true">◷</span>
+          <div>
+            <h2 class="panel-title">Movimientos recientes</h2>
+            <div class="panel-hint">Historial de entradas y salidas registradas</div>
+          </div>
+        </div>
+        <input class="search" id="history-search" type="search" aria-label="Buscar en el historial" placeholder="Buscar placa">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Placa</th><th>Tipo</th><th>Entrada</th><th>Salida</th><th>Estado</th></tr></thead>
+          <tbody id="history-rows"></tbody>
+        </table>
+        <div class="empty-state" id="history-empty"><span class="empty-icon" aria-hidden="true">◷</span>Aún no hay movimientos registrados.</div>
+      </div>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "parqueadero-registros-v1";
+      const CAPACITY = 100;
+      const dateFormatter = new Intl.DateTimeFormat("es", { dateStyle: "medium" });
+      const dateTimeFormatter = new Intl.DateTimeFormat("es", { dateStyle: "short", timeStyle: "short" });
+      const timeFormatter = new Intl.DateTimeFormat("es", { hour: "2-digit", minute: "2-digit" });
+      const byId = (id) => document.getElementById(id);
+      let records = [];
+      let toastTimer;
+
+      function showToast(message, isError = false) {
+        const toast = byId("toast");
+        toast.textContent = message;
+        toast.classList.toggle("error", isError);
+        toast.classList.add("visible");
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 3200);
+      }
+
+      function loadRecords() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored) return [];
+        const parsed = JSON.parse(stored);
+        if (!Array.isArray(parsed)) throw new Error("El formato guardado no es válido.");
+        return parsed.filter((record) =>
+          record &&
+          typeof record.id === "string" &&
+          typeof record.plate === "string" &&
+          typeof record.type === "string" &&
+          typeof record.entryAt === "string" &&
+          (record.exitAt === null || typeof record.exitAt === "string")
+        );
+      }
+
+      function saveRecords() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+          return true;
+        } catch (error) {
+          showToast("No se pudo guardar el registro en este navegador.", true);
+          console.error("Error guardando los registros del parqueadero:", error);
+          return false;
+        }
+      }
+
+      function makeCell(text, className) {
+        const cell = document.createElement("td");
+        if (className) {
+          const span = document.createElement("span");
+          span.className = className;
+          span.textContent = text;
+          cell.append(span);
+        } else {
+          cell.textContent = text;
+        }
+        return cell;
+      }
+
+      function makeEmptyRow(tbody, colspan, message) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = colspan;
+        cell.className = "empty-state";
+        cell.textContent = message;
+        row.append(cell);
+        tbody.append(row);
+      }
+
+      function renderActive() {
+        const query = byId("active-search").value.trim().toUpperCase();
+        const active = records
+          .filter((record) => !record.exitAt)
+          .sort((a, b) => new Date(b.entryAt) - new Date(a.entryAt));
+        const visible = active.filter((record) => record.plate.includes(query));
+        const tbody = byId("active-rows");
+        tbody.replaceChildren();
+        visible.forEach((record) => {
+          const row = document.createElement("tr");
+          row.append(makeCell(record.plate, "plate"), makeCell(record.type, "vehicle-type"));
+          row.append(makeCell(timeFormatter.format(new Date(record.entryAt))));
+          const action = document.createElement("td");
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "exit-button";
+          button.textContent = "Registrar salida";
+          button.setAttribute("aria-label", `Registrar salida del vehículo ${record.plate}`);
+          button.addEventListener("click", () => registerExit(record.id));
+          action.append(button);
+          row.append(action);
+          tbody.append(row);
+        });
+        byId("active-empty").hidden = visible.length > 0;
+        byId("active-badge").textContent = `${active.length} activos`;
+      }
+
+      function renderHistory() {
+        const query = byId("history-search").value.trim().toUpperCase();
+        const visible = [...records]
+          .filter((record) => record.plate.includes(query))
+          .sort((a, b) => new Date(b.entryAt) - new Date(a.entryAt))
+          .slice(0, 50);
+        const tbody = byId("history-rows");
+        tbody.replaceChildren();
+        visible.forEach((record) => {
+          const row = document.createElement("tr");
+          row.append(makeCell(record.plate, "plate"), makeCell(record.type, "vehicle-type"));
+          row.append(makeCell(dateTimeFormatter.format(new Date(record.entryAt))));
+          row.append(makeCell(record.exitAt ? dateTimeFormatter.format(new Date(record.exitAt)) : "—"));
+          row.append(makeCell(record.exitAt ? "Finalizado" : "En parqueadero"));
+          tbody.append(row);
+        });
+        byId("history-empty").hidden = visible.length > 0;
+      }
+
+      function renderSummary() {
+        const active = records.filter((record) => !record.exitAt).length;
+        const today = new Date().toDateString();
+        const entriesToday = records.filter((record) => new Date(record.entryAt).toDateString() === today).length;
+        const exitsToday = records.filter((record) => record.exitAt && new Date(record.exitAt).toDateString() === today).length;
+        byId("active-total").textContent = String(active);
+        byId("entries-today").textContent = String(entriesToday);
+        byId("exits-today").textContent = String(exitsToday);
+        byId("occupancy-label").textContent = `${active} ${active === 1 ? "vehículo" : "vehículos"}`;
+        const percentage = Math.min(100, Math.round(active / CAPACITY * 100));
+        byId("progress-fill").style.width = `${percentage}%`;
+        byId("progress-fill").parentElement.setAttribute("aria-valuenow", String(percentage));
+      }
+
+      function render() {
+        renderSummary();
+        renderActive();
+        renderHistory();
+      }
+
+      function registerExit(id) {
+        const record = records.find((item) => item.id === id);
+        if (!record || record.exitAt) return;
+        record.exitAt = new Date().toISOString();
+        if (saveRecords()) {
+          render();
+          showToast(`Salida registrada para ${record.plate}.`);
+        }
+      }
+
+      byId("entry-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const plate = byId("plate-input").value.trim().toUpperCase();
+        if (!plate) {
+          showToast("Escribe la placa del vehículo.", true);
+          byId("plate-input").focus();
+          return;
+        }
+        if (records.some((record) => record.plate === plate && !record.exitAt)) {
+          showToast(`La placa ${plate} ya tiene una entrada activa.`, true);
+          byId("plate-input").focus();
+          return;
+        }
+        records.push({
+          id: window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          plate,
+          type: byId("type-input").value,
+          entryAt: new Date().toISOString(),
+          exitAt: null
+        });
+        if (saveRecords()) {
+          byId("entry-form").reset();
+          byId("plate-input").focus();
+          render();
+          showToast(`Entrada registrada para ${plate}.`);
+        }
+      });
+
+      byId("active-search").addEventListener("input", renderActive);
+      byId("history-search").addEventListener("input", renderHistory);
+      byId("current-date").textContent = dateFormatter.format(new Date());
+
+      try {
+        records = loadRecords();
+      } catch (error) {
+        records = [];
+        showToast("No se pudieron leer los registros guardados. Se iniciará una lista nueva.", true);
+        console.error("Error leyendo los registros del parqueadero:", error);
+      }
+      render();
+    })();
+  </script>
+</body>
+</html>
